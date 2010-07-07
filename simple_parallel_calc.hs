@@ -7,61 +7,59 @@ import System.IO
 import Control.Concurrent
 
 -- Communication Channel
-threadOneInput :: IO (MVar [Char])
-threadOneInput = newEmptyMVar
 
-threadOneOutput :: IO (MVar [Char])
-threadOneOutput = newEmptyMVar
-
-threadTwoInput :: IO (MVar [Char])
-threadTwoInput = newEmptyMVar
-
-threadTwoOutput :: IO (MVar [Char])
-threadTwoOutput = newEmptyMVar
 
 -- ThreadOne
-threadOneFirst :: IO [Char]
-threadOneFirst = threadOneInput >>= takeMVar
+threadOneFirst :: MVar [Char] -> IO [Char]
+threadOneFirst = \threadOneInput -> takeMVar threadOneInput
 
-threadOneSecond :: [Char] -> IO ()
-threadOneSecond str = threadOneOutput >>= (\mvar -> putMVar mvar $ str ++ str)
+threadOneSecond :: MVar [Char] -> [Char] -> IO ()
+threadOneSecond threadOneOutput str =
+    putMVar threadOneOutput $ str ++ str
 
-threadOne :: IO ()
-threadOne = threadOneFirst >>= threadOneSecond
+threadOne :: MVar[Char] -> MVar[Char] -> IO ()
+threadOne inp outp = (threadOneFirst inp) >>= (threadOneSecond outp)
 
 -- ThreadTwo
-threadTwoFirst :: IO [Char]
-threadTwoFirst = threadTwoInput >>= takeMVar
+threadTwoFirst :: MVar[Char] -> IO [Char]
+threadTwoFirst = takeMVar
 
-threadTwoSecond :: [Char] -> IO ()
-threadTwoSecond str = threadTwoOutput >>= (\mvar -> putMVar mvar $ reverse str)
+threadTwoSecond :: MVar[Char] -> [Char] -> IO ()
+threadTwoSecond threadTwoOutput str = putMVar threadTwoOutput $ reverse str
 
-threadTwo :: IO ()
-threadTwo = threadTwoFirst >>= threadTwoSecond
+threadTwo :: MVar[Char] -> MVar[Char] -> IO ()
+threadTwo = \input output -> (threadTwoFirst input) >>= (threadTwoSecond output)
 
 -- Main
 inputline :: IO [Char]
 inputline = hGetLine stdin
 
-feedThreadOne :: [Char] -> IO [Char]
-feedThreadOne input = threadOneInput >>= (\mvar -> putMVar mvar input) >> return input
+feedThreadOne :: MVar[Char] -> [Char] -> IO [Char]
+feedThreadOne threadOneInput input =  (putMVar threadOneInput input) >> return input
 
-feedThreadTwo :: [Char] -> IO ()
-feedThreadTwo input = threadTwoInput >>= (\mvar -> putMVar mvar input)
+feedThreadTwo :: MVar[Char] -> [Char] -> IO ()
+feedThreadTwo = putMVar
 
-waitThreadOne :: () -> IO [Char]
-waitThreadOne = \x -> threadOneOutput >>= takeMVar
+waitThreadOne :: MVar[Char] -> () -> IO [Char]
+waitThreadOne = \threadOneOutput x -> takeMVar threadOneOutput
 
-waitThreadTwo :: [Char] -> IO ([Char], [Char])
-waitThreadTwo = \one -> (threadTwoOutput >>= takeMVar) >>= \two -> (return (one, two))
+waitThreadTwo :: MVar[Char] -> [Char] -> IO ([Char], [Char])
+waitThreadTwo = \threadTwoOutput one -> (takeMVar threadTwoOutput) >>= \two -> (return (one, two))
 
 output :: ([Char], [Char]) -> IO ()
 output = \(x,y) -> putStr $ x ++ y
 
 main :: IO ()
-main = forkIO threadOne >> forkIO threadTwo >>
-       inputline >>= feedThreadOne >>=
-       feedThreadTwo >>= waitThreadOne >>=
-       waitThreadTwo >>= output
+main = newEmptyMVar >>= \threadOneInput ->
+       newEmptyMVar >>= \threadOneOutput ->
+       newEmptyMVar >>= \threadTwoInput ->
+       newEmptyMVar >>= \threadTwoOutput ->
+       forkIO (threadOne threadOneInput threadOneOutput) >>
+       forkIO (threadTwo threadTwoInput threadTwoOutput) >>
+       inputline >>=
+       (feedThreadOne threadOneInput) >>=
+       (feedThreadTwo threadTwoInput) >>= 
+       (waitThreadOne threadOneOutput) >>=
+       (waitThreadTwo threadTwoOutput) >>= output
 
 -- Instead of writing these above, we should be able to 
