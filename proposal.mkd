@@ -21,7 +21,7 @@ Write a Haskell program that does:
 
     threadOneSecond :: MVar [Char] -> [Char] -> IO ()
     threadOneSecond threadOneOutput str =
-	putMVar threadOneOutput $ str ++ str
+        putMVar threadOneOutput $ str ++ str
 
     threadOne :: MVar[Char] -> MVar[Char] -> IO ()
     threadOne inp outp = (threadOneFirst inp) >>= (threadOneSecond outp)
@@ -57,24 +57,24 @@ Write a Haskell program that does:
 
     main :: IO ()
     main = newEmptyMVar >>= \threadOneInput ->
-	   newEmptyMVar >>= \threadOneOutput ->
-	   newEmptyMVar >>= \threadTwoInput ->
-	   newEmptyMVar >>= \threadTwoOutput ->
-	   forkIO (threadOne threadOneInput threadOneOutput) >>
-	   forkIO (threadTwo threadTwoInput threadTwoOutput) >>
-	   inputline >>=
-	   (feedThreadOne threadOneInput) >>=
-	   (feedThreadTwo threadTwoInput) >>= 
-	   (waitThreadOne threadOneOutput) >>=
-	   (waitThreadTwo threadTwoOutput) >>= output
+           newEmptyMVar >>= \threadOneOutput ->
+           newEmptyMVar >>= \threadTwoInput ->
+           newEmptyMVar >>= \threadTwoOutput ->
+           forkIO (threadOne threadOneInput threadOneOutput) >>
+           forkIO (threadTwo threadTwoInput threadTwoOutput) >>
+           inputline >>=
+           (feedThreadOne threadOneInput) >>=
+           (feedThreadTwo threadTwoInput) >>= 
+           (waitThreadOne threadOneOutput) >>=
+           (waitThreadTwo threadTwoOutput) >>= output
     
 ### What is Wrong with This
 
 The code is complicated, but what it really does is 
     main' = (hGetLine stdin) >>= \input ->
-	    (\(x,y) -> putStr $ x ++ y)
-	    ((  (\input -> input ++ input)  ) input,
-	     (  (\input -> reverse input)   ) input)
+            (\(x,y) -> putStr $ x ++ y)
+            ((  (\input -> input ++ input)  ) input,
+             (  (\input -> reverse input)   ) input)
 with two parts executed in separate threads.
 
 
@@ -82,11 +82,11 @@ with two parts executed in separate threads.
 
 So, instead of writing the actual code, we should be able to write something like:
     main'' = (hGetLine stdin) >>= \input ->
-	    makeThread >>= \threadOne ->
-	    makeThread >>= \threadTwo ->
-	    (\(x,y) -> putStr $ x ++ y)
-	    (threadOne (\input -> input ++ input) input,
-	     threadTwo (\input -> reverse input) input)
+            makeThread >>= \threadOne ->
+            makeThread >>= \threadTwo ->
+            (\(x,y) -> putStr $ x ++ y)
+            (threadOne (\input -> input ++ input) input,
+             threadTwo (\input -> reverse input) input)
 The expressions threadOne and threadTwo are working as asynchronous RPC interface.
 
 
