@@ -1,0 +1,31 @@
+originally, 
+putMVar :: MVar a -> a -> IO ()
+takeMVar :: MVar a -> IO a
+
+
+Another type constructor
+
+extract :: (K t) d -> d
+duplicate :: (K t) d -> (K t) ((K t) d)
+extend ((K t) d -> e) -> (K t) d -> (K t) e
+
+for (t :: IO ThreadId)
+    (f :: IO a)
+
+===
+This is similar to saying (K t) is a comonad.
+However, in the comonad condition,
+
+class Functor w => Comonad w where
+  extract :: w a -> a
+  duplicate :: w a -> w (w a)
+  extend :: (w a -> b) -> w a -> w b
+
+a has to be (IO a)
+===
+
+
+TODO
+
+(K t) be functor for t :: IO ThreadID.  Is this possible?
+
