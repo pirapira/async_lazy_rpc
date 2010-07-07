@@ -65,15 +65,10 @@ main = newEmptyMVar >>= \threadOneInput ->
 --What is Wrong with This--------------------------------------------------------
 
 -- However, what it really does is 
-
--- (simple_parallel_calc2.hs)
--- import System.IO
-
--- main = (hGetLine stdin) >>= \input ->
---        (\(x,y) -> putStr $ x ++ y)
---        ((  (\input -> input ++ input)  ) input,
---         (  (\input -> reverse input)   ) input)
-
+main' = (hGetLine stdin) >>= \input ->
+        (\(x,y) -> putStr $ x ++ y)
+        ((  (\input -> input ++ input)  ) input,
+         (  (\input -> reverse input)   ) input)
 -- with two parts executed in separate threads.
 
 
@@ -85,7 +80,7 @@ main = newEmptyMVar >>= \threadOneInput ->
 
 -- import System.IO
 
--- main = (hGetLine stdin) >>= \input ->
+-- main'' = (hGetLine stdin) >>= \input ->
 --        makeThread >>= \threadOne ->
 --        makeThread >>= \threadTwo ->
 --        (\(x,y) -> putStr $ x ++ y)
