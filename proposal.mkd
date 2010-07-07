@@ -1,9 +1,14 @@
 # Asynchronous RPC between Threads with Partial Result Passing
 
 ## Example Problem
+Write a Haskell program that does:
+
 1) take two input a from command line
+
 2a) thread one computes (a ++ a)
+
 2b) thread two computes (reverse a)
+
 3) a thread collects both and show concatenation.
 
 ## An Implementation
@@ -91,8 +96,8 @@ The expressions threadOne and threadTwo are working as asynchronous RPC interfac
 # Ultimate Goal
 
 The first goal is not satisfactory if it is implemented using two MVar's:
-* input MVar: used when RPC is called,
-* output MVar: used when RPC is returned.
+- input MVar: used when RPC is called,
+- output MVar: used when RPC is returned.
 We call this implementation "naive two MVar"
 
 consider the following RPC.
@@ -102,6 +107,6 @@ The naive two MVar approach does not satisfy the caller's need for using
 the first elements as soon as possible.
 
 A clever implementation should satisfy
-* parallel execution of caller and caller
-* partial result passing
+- parallel execution of caller and caller
+- partial result passing
 We want to support not only lists, but also all inductively defined data types.
