@@ -1,13 +1,12 @@
+--Problem--------------------------------------------------------
 -- 1. take two input a from command line
 -- 2. thread one computes (a ++ a)
 -- 2. thread two computes (reverse a)
 -- 3. a thread collects both and show concatenation.
 
+--An Implementation--------------------------------------------------------
 import System.IO
 import Control.Concurrent
-
--- Communication Channel
-
 
 -- ThreadOne
 threadOneFirst :: MVar [Char] -> IO [Char]
@@ -101,6 +100,10 @@ main' = (hGetLine stdin) >>= \input ->
 -- consider the following RPC.
 -- (threadOne compute long list)
 -- Assume the caller wants to consume the first elements of the computed long list.
--- The naive two MVar approach does not satisfy the caller's need on 
+-- The naive two MVar approach does not satisfy the caller's need for using
+-- the first elements as soon as possible.
 
+-- A clever implementation should satisfy
+---- parallel execution of caller and caller
+---- partial result passing
 -- We want to support not only lists, but also all inductively defined data types.
