@@ -77,6 +77,8 @@ main = newEmptyMVar >>= \threadOneInput ->
 -- with two parts executed in separate threads.
 
 
+
+
 --First Goal---------------------------------------------------------------------
 
 -- So, instead of writing the actual code, we should be able to write something like:
@@ -90,4 +92,20 @@ main = newEmptyMVar >>= \threadOneInput ->
 --        (threadOne (\input -> input ++ input) input,
 --         threadTwo (\input -> reverse input) input)
 
+-- The expressions threadOne and threadTwo are working as asynchronous RPC interface.
 
+
+
+--Second Goal---------------------------------------------------------------------
+
+-- The first goal is not satisfactory if it is implemented using two MVar's:
+---- input MVar: used when RPC is called,
+---- output MVar: used when RPC is returned.
+-- We call this implementation "naive two MVar"
+
+-- consider the following RPC.
+-- (threadOne compute long list)
+-- Assume the caller wants to consume the first elements of the computed long list.
+-- The naive two MVar approach does not satisfy the caller's need on 
+
+-- We want to support not only lists, but also all inductively defined data types.
