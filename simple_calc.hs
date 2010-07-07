@@ -3,4 +3,10 @@
 
 import IO
 
-main = hGetLine stdin >>= \x -> putStr $ x ++ x
+showdouble :: [Char] -> IO ()
+showdouble = \x -> putStr $ x ++ x
+
+inputline :: IO [Char]
+inputline = hGetLine stdin
+
+main = inputline >>= showdouble
