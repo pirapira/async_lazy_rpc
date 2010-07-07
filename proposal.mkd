@@ -3,7 +3,7 @@
 ## Example Problem
 Write a Haskell program that does:
 
-1) take two input a from command line
+1) take an input a from stdin
 
 2a) thread one computes (a ++ a)
 
