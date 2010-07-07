@@ -3,5 +3,4 @@
 
 import IO
 
-main = do x <- hGetLine stdin
-          putStr $ x ++ x
+main = hGetLine stdin >>= \x -> putStr $ x ++ x
