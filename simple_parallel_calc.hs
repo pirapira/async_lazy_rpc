@@ -62,4 +62,32 @@ main = newEmptyMVar >>= \threadOneInput ->
        (waitThreadOne threadOneOutput) >>=
        (waitThreadTwo threadTwoOutput) >>= output
 
--- Instead of writing these above, we should be able to 
+--What is Wrong with This--------------------------------------------------------
+
+-- However, what it really does is 
+
+-- (simple_parallel_calc2.hs)
+-- import System.IO
+
+-- main = (hGetLine stdin) >>= \input ->
+--        (\(x,y) -> putStr $ x ++ y)
+--        ((  (\input -> input ++ input)  ) input,
+--         (  (\input -> reverse input)   ) input)
+
+-- with two parts executed in separate threads.
+
+
+--First Goal---------------------------------------------------------------------
+
+-- So, instead of writing the actual code, we should be able to write something like:
+
+-- import System.IO
+
+-- main = (hGetLine stdin) >>= \input ->
+--        makeThread >>= \threadOne ->
+--        makeThread >>= \threadTwo ->
+--        (\(x,y) -> putStr $ x ++ y)
+--        (threadOne (\input -> input ++ input) input,
+--         threadTwo (\input -> reverse input) input)
+
+
