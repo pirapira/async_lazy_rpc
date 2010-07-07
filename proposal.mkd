@@ -68,7 +68,7 @@ Write a Haskell program that does:
 	   (waitThreadOne threadOneOutput) >>=
 	   (waitThreadTwo threadTwoOutput) >>= output
     
-## What is Wrong with This
+### What is Wrong with This
 
 The code is complicated, but what it really does is 
     main' = (hGetLine stdin) >>= \input ->
@@ -76,8 +76,6 @@ The code is complicated, but what it really does is
 	    ((  (\input -> input ++ input)  ) input,
 	     (  (\input -> reverse input)   ) input)
 with two parts executed in separate threads.
-
-
 
 
 ## First Goal
@@ -93,7 +91,9 @@ The expressions threadOne and threadTwo are working as asynchronous RPC interfac
 
 
 
-# Ultimate Goal
+## Second Goal
+
+### Naive Implementation Can Destroy the Benefits of Lazy Evaluation
 
 The first goal is not satisfactory if it is implemented using two MVar's:
 
@@ -102,12 +102,13 @@ The first goal is not satisfactory if it is implemented using two MVar's:
 
 We call this implementation "naive two MVar"
 
-consider the following RPC.
+Consider the following RPC.
     (threadOne compute long list)
 Assume the caller wants to consume the first elements of the computed long list.
 The naive two MVar approach does not satisfy the caller's need for using
 the first elements as soon as possible.
 
+### Asynchronous RPC Can Co-exist With Lazy Evaluation
 A clever implementation should satisfy
 
 1. parallel execution of caller and caller
