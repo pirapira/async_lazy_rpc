@@ -3,3 +3,5 @@
 /ch24.txt~
 /simple_calc.hs~
 /simple_parallel_calc.hs~
+/simple_calc.hi
+/simple_calc.o

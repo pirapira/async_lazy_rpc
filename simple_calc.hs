@@ -1,7 +1,7 @@
 -- 1. take input a from command line
 -- 2. show a ++ a 
 
-import IO
+import System.IO
 
 showdouble :: [Char] -> IO ()
 showdouble = \x -> putStr $ x ++ x
