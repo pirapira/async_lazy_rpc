@@ -68,7 +68,7 @@ Write a Haskell program that does:
            (waitThreadOne threadOneOutput) >>=
            (waitThreadTwo threadTwoOutput) >>= output
     
-### What is Wrong with This
+### Intension is Much Simpler
 
 The code is complicated, but what it really does is 
     main' = (hGetLine stdin) >>= \input ->
